@@ -1,0 +1,4 @@
+
+
+class RequestException(Exception):
+    pass
