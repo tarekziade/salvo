@@ -1,7 +1,7 @@
 Boom2
 =====
 
-WORK IN PROGRESS.
+WORK IN PROGRESS. THIS IS NOT WORKING YET, DO NOT INSTALL
 
 This is the replacement for https://github.com/tarekziade/boom
 
