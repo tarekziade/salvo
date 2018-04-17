@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from boom2 import __version__
+from pulser import __version__
 import sys
 
 install_requires = ['molotov']
@@ -15,9 +15,9 @@ classifiers = ["License :: OSI Approved :: Apache Software License",
                "Programming Language :: Python :: 3.5",
                "Programming Language :: Python :: 3.6"]
 
-setup(name='boom2',
+setup(name='pulser',
       version=__version__,
-      url='https://github.com/tarekziade/boom2',
+      url='https://github.com/tarekziade/pulser',
       packages=find_packages(),
       long_description=description,
       description="Simple HTTP Load tester",
@@ -30,5 +30,5 @@ setup(name='boom2',
       test_suite='unittest.collector',
       entry_points="""
       [console_scripts]
-      boom2 = boom2.run:main
+      pulser = pulser.run:main
       """)

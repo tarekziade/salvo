@@ -1,5 +1,5 @@
 from collections import defaultdict, namedtuple
-from boom2.pgbar import AnimatedProgressBar
+from pulser.pgbar import AnimatedProgressBar
 
 
 def print_json(results):

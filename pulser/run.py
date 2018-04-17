@@ -3,11 +3,11 @@ import logging
 import sys
 from socket import gaierror
 
-from boom2 import __version__
-from boom2.util import resolve
-from boom2.output import (print_errors, print_stats, print_json,
+from pulser import __version__
+from pulser.util import resolve
+from pulser.output import (print_errors, print_stats, print_json,
                           RunResults)
-from boom2.exceptions import RequestException
+from pulser.exceptions import RequestException
 
 
 logger = logging.getLogger('boom')
