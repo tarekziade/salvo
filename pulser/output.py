@@ -1,3 +1,4 @@
+import math
 from collections import defaultdict, namedtuple
 from pulser.pgbar import AnimatedProgressBar
 
@@ -59,30 +60,19 @@ def print_stats(results):
     print('')
     print('-------- Results --------')
 
-    print('Successful calls\t\t%r' % stats.count)
-    print('Total time        \t\t%.4f s  ' % stats.total_time)
-    print('Average           \t\t%.4f s  ' % stats.avg)
-    print('Fastest           \t\t%.4f s  ' % stats.min)
-    print('Slowest           \t\t%.4f s  ' % stats.max)
-    print('Amplitude         \t\t%.4f s  ' % stats.amp)
-    print('Standard deviation\t\t%.6f' % stats.stdev)
-    print('RPS               \t\t%d' % rps)
-    if rps > 500:
-        print('BSI              \t\tWoooooo Fast')
-    elif rps > 100:
-        print('BSI              \t\tPretty good')
-    elif rps > 50:
-        print('BSI              \t\tMeh')
-    else:
-        print('BSI              \t\t:(')
+    print('Successful calls    \t\t%r' % stats.count)
+    print('Total time          \t\t%.4f s  ' % stats.total_time)
+    print('Average             \t\t%.4f s  ' % stats.avg)
+    print('Fastest             \t\t%.4f s  ' % stats.min)
+    print('Slowest             \t\t%.4f s  ' % stats.max)
+    print('Amplitude           \t\t%.4f s  ' % stats.amp)
+    print('Standard deviation  \t\t%.6f' % stats.stdev)
+    print('Requests Per Second \t\t%d' % rps)
     print('')
     print('-------- Status codes --------')
     for code, items in results.status_code_counter.items():
         print('Code %d          \t\t%d times.' % (code, len(items)))
     print('')
-    print('-------- Legend --------')
-    print('RPS: Request Per Second')
-    print('BSI: Boom Speed Index')
 
 
 class RunResults(object):
@@ -106,7 +96,8 @@ class RunResults(object):
             self._progress_bar = None
         self.quiet = quiet
 
-    def incr(self):
+    def incr(self, status=200, duration=0):
+        self.status_code_counter[status].append(duration)
         if self.quiet:
             return
         if self._progress_bar is not None:

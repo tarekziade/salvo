@@ -6,7 +6,7 @@ from socket import gaierror
 from pulser import __version__
 from pulser.util import resolve
 from pulser.output import (print_errors, print_stats, print_json,
-                          RunResults)
+                           RunResults)
 from pulser.exceptions import RequestException
 
 
@@ -15,9 +15,10 @@ _VERBS = ('GET', 'POST', 'DELETE', 'PUT', 'HEAD', 'OPTIONS')
 _DATA_VERBS = ('POST', 'PUT')
 
 
-def load(*args, **kw):
-    res = RunResults()
-    # ==> INTEGRATE MOLOTOV HERE <=== XXX
+def load(url, args):
+    res = RunResults(args.concurrency * args.requests, args.quiet)
+    from pulser.scenario import run_test
+    run_test(url, res, args)
     return res
 
 
@@ -130,11 +131,7 @@ def main():
         headers['Host'] = original
 
     try:
-        res = load(
-            url, args.requests, args.concurrency, args.duration,
-            args.method, args.data, args.content_type, args.auth,
-            headers=headers, pre_hook=args.pre_hook,
-            post_hook=args.post_hook, quiet=(args.json_output or args.quiet))
+        res = load(url, args)
     except RequestException as e:
         print_errors((e, ))
         sys.exit(1)
