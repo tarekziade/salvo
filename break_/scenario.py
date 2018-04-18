@@ -40,7 +40,7 @@ def run_test(url, results, pulse_args):
     args.use_extension = []
     args.fail = None
     args.force_reconnection = False
-    args.scenario = 'pulser.scenario'
+    args.scenario = 'break_.scenario'
     molotov.set_var('url', url)
     molotov.set_var('results', results)
 

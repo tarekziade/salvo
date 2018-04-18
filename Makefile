@@ -9,18 +9,13 @@ INSTALL = $(BIN)/pip install --no-deps
 
 all: build
 
-$(PYTHON):
+build:
 	virtualenv-3.6 $(VENV)
-
-build: $(PYTHON)
-	$(PYTHON) setup.py develop
+	$(VENV)/bin/pip install tox
 
 clean:
 	rm -rf $(VENV)
 
-test_dependencies:
-	$(BIN)/pip install tox 
-
-test: build test_dependencies
+test: build
 	$(BIN)/tox
 

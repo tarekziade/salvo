@@ -3,11 +3,11 @@ import logging
 import sys
 from socket import gaierror
 
-from pulser import __version__
-from pulser.util import resolve
-from pulser.output import (print_errors, print_stats, print_json,
+from break_ import __version__
+from break_.util import resolve
+from break_.output import (print_errors, print_stats, print_json,
                            RunResults)
-from pulser.exceptions import RequestException
+from break_.exceptions import RequestException
 
 
 logger = logging.getLogger('boom')
@@ -17,7 +17,7 @@ _DATA_VERBS = ('POST', 'PUT')
 
 def load(url, args):
     res = RunResults(args.concurrency * args.requests, args.quiet)
-    from pulser.scenario import run_test
+    from break_.scenario import run_test
     run_test(url, res, args)
     return res
 

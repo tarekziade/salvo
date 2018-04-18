@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from pulser import __version__
+from break_ import __version__
 import sys
 
 install_requires = ['molotov']
@@ -15,9 +15,9 @@ classifiers = ["License :: OSI Approved :: Apache Software License",
                "Programming Language :: Python :: 3.5",
                "Programming Language :: Python :: 3.6"]
 
-setup(name='pulser',
+setup(name='break',
       version=__version__,
-      url='https://github.com/tarekziade/pulser',
+      url='https://github.com/tarekziade/break',
       packages=find_packages(),
       long_description=description,
       description="Simple HTTP Load tester",
@@ -30,5 +30,5 @@ setup(name='pulser',
       test_suite='unittest.collector',
       entry_points="""
       [console_scripts]
-      pulser = pulser.run:main
+      break = break_.run:main
       """)

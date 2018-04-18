@@ -1,6 +1,6 @@
 import math
 from collections import defaultdict, namedtuple
-from pulser.pgbar import AnimatedProgressBar
+from break_.pgbar import AnimatedProgressBar
 
 
 def print_json(results):
