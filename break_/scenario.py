@@ -7,11 +7,17 @@ from molotov.run import run
 
 @molotov.setup()
 async def init_worker(worker_num, args):
+    headers  = {}
+
+    content_type = molotov.get_var('content_type')
+    if content_type:
+        headers['Content-Type'] = content_type
+
     auth = molotov.get_var('auth')
-    if auth is None:
-        return {}
-    basic = base64.b64encode(auth.encode())
-    headers = {'Authorization': 'Basic %s' % basic.decode()}
+    if auth is not None:
+        basic = base64.b64encode(auth.encode())
+        headers['Authorization'] = 'Basic %s' % basic.decode()
+
     return {'headers': headers}
 
 
@@ -19,9 +25,11 @@ async def init_worker(worker_num, args):
 async def http_test(session):
     url = molotov.get_var('url')
     res = molotov.get_var('results')
+    meth = molotov.get_var('method')
     start = time.time()
+    meth = getattr(session, meth.lower())
 
-    async with session.get(url) as resp:
+    async with meth(url) as resp:
         res.incr(resp.status, time.time() - start)
 
 
@@ -51,7 +59,9 @@ def run_test(url, results, pulse_args):
     args.fail = None
     args.force_reconnection = False
     args.scenario = 'break_.scenario'
+    molotov.set_var('method', pulse_args.method)
     molotov.set_var('url', url)
     molotov.set_var('results', results)
     molotov.set_var('auth', pulse_args.auth)
+    molotov.set_var('content_type', pulse_args.content_type)
     run(args)
