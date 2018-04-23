@@ -1,3 +1,5 @@
+import time
+import sys
 import math
 from collections import defaultdict, namedtuple
 from break_.pgbar import AnimatedProgressBar
@@ -102,10 +104,16 @@ class RunResults(object):
         else:
             self._progress_bar = None
         self.quiet = quiet
+        self.start_time = self.total_time = 0
+
+    def start(self):
+        self.start_time = time.time()
+
+    def stop(self):
+        self.total_time = time.time() - self.start_time
 
     def incr(self, status=200, duration=0):
         self.status_code_counter[status].append(duration)
-        self.total_time += duration
         if self.quiet:
             return
         if self._progress_bar is not None:

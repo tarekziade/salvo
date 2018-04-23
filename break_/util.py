@@ -36,8 +36,8 @@ def resolve(url):
         netloc = parts.netloc
 
     if port not in (443, 80):
-        host += ':%d' % port
-        original += ':%d' % port
+        hostname += ':%d' % port
+        resolved += ':%d' % port
 
     parts = (parts.scheme, netloc, parts.path or '',
              '', parts.query or '', parts.fragment or '')

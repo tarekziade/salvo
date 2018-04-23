@@ -16,9 +16,17 @@ _DATA_VERBS = ('POST', 'PUT')
 
 
 def load(url, args):
-    res = RunResults(args.concurrency * args.requests, args.quiet)
+    if args.requests:
+        num = args.concurrency * args.requests
+    else:
+        num = None
+    res = RunResults(num, args.quiet)
     from break_.scenario import run_test
-    run_test(url, res, args)
+    res.start()
+    try:
+        run_test(url, res, args)
+    finally:
+        res.stop()
     return res
 
 
