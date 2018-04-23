@@ -5,26 +5,14 @@ WORK IN PROGRESS. THIS IS NOT WORKING YET, DO NOT INSTALL
 
 This is the replacement for https://github.com/tarekziade/boom
 
+**Break** is a simple command line tool to send some load to an HTTP endpoint.
 
-**Break** is a simple command line tool to send some load to a web app.
-
-
-**Break** is a script you can use to quickly smoke-test your
+Break is a script you can use to quickly smoke-test your
 web app deployment. If you need a more complex tool,
 I'd suggest looking at `Molotov <http://molotov.readthedocs.io>`_
 
-Break was specifically written to replace my Apache Bench (ab) usage,
-to provide a few missing features and fix a few annoyances I had
-with ab.
-
-I have no special ambitions for this tool, and since I have not
-found any tool like this in the Python-land, I wrote this one.
-
-There are a lot of other tools out there, like Siege which
-seems very popular.
-
-However, Break is a good choice because it works on any platform
-and is able to simulate thousands of users by using Molotov.
+Break was specifically written to replace my Apache Bench (ab) usage. 
+Break is based on Molotov, which uses Python 3 asyncio & aiohttp.
 
 
 Installation
@@ -114,14 +102,12 @@ You can trigger load testing from Python code by importing the function
     from break_ import load
 
     result = load('http://example.com/', 1, 1, 0, 'GET', None, 'text/plain', None, quiet=True)
+    
+    
+Contribute
+==========
 
-
-Design
-======
-
-Boom uses **Molotov** under the hood. It's just a simple Molotov script that makes
-it simple to runs an AB-like test against a single HTTP endpoint using command line
-options.
+Break is very simple and anyone familiar with Python can contribute.
 
 If you are interested in this project, you are welcome to join the fun at
 https://github.com/tarekziade/break
