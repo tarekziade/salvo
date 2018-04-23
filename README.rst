@@ -3,34 +3,19 @@ Break
 
 WORK IN PROGRESS. THIS IS NOT WORKING YET, DO NOT INSTALL
 
-This is the replacement for https://github.com/tarekziade/break
+This is the replacement for https://github.com/tarekziade/boom
 
 
 **Break** is a simple command line tool to send some load to a web app.
 
-.. image:: https://img.shields.io/coveralls/tarekziade/break.svg
-    :target: https://coveralls.io/r/tarekziade/break
 
-.. image:: https://img.shields.io/travis/tarekziade/break/master.svg
-    :target: https://travis-ci.org/tarekziade/break
-
-.. image:: https://img.shields.io/pypi/v/break.svg
-    :target: https://pypi.python.org/pypi/break
-
-.. image:: https://img.shields.io/pypi/pyversions/break.svg
-    :target: https://pypi.python.org/pypi/break/
-
-.. image:: https://img.shields.io/pypi/dd/break.svg
-    :target: https://pypi.python.org/pypi/break/
-
-
-Break is a script you can use to quickly smoke-test your
+**Break** is a script you can use to quickly smoke-test your
 web app deployment. If you need a more complex tool,
 I'd suggest looking at `Molotov <http://molotov.readthedocs.io>`_
 
-Break was specifically written to replace my Apache Bench usage,
+Break was specifically written to replace my Apache Bench (ab) usage,
 to provide a few missing features and fix a few annoyances I had
-with AB.
+with ab.
 
 I have no special ambitions for this tool, and since I have not
 found any tool like this in the Python-land, I wrote this one.
@@ -73,8 +58,6 @@ Basic usage example: 100 queries with a maximum concurrency of
     Amplitude               0.0191 s
     RPS                     306
 
-    -------- Legend --------
-    RPS: Request Per Second
 
 
 Break has more options::
