@@ -1,8 +1,18 @@
 import time
+import base64
 from collections import namedtuple
 import molotov
 from molotov.run import run
 
+
+@molotov.setup()
+async def init_worker(worker_num, args):
+    auth = molotov.get_var('auth')
+    if auth is None:
+        return {}
+    basic = base64.b64encode(auth.encode())
+    headers = {'Authorization': 'Basic %s' % basic.decode()}
+    return {'headers': headers}
 
 
 @molotov.scenario()
@@ -43,5 +53,5 @@ def run_test(url, results, pulse_args):
     args.scenario = 'break_.scenario'
     molotov.set_var('url', url)
     molotov.set_var('results', results)
-
+    molotov.set_var('auth', pulse_args.auth)
     run(args)

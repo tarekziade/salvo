@@ -4,7 +4,9 @@ from break_.pgbar import AnimatedProgressBar
 
 
 def print_json(results):
-    pass
+    import json
+    stats = calc_stats(results)
+    print(json.dumps(stats._asdict()))
 
 
 def print_errors(errors):
@@ -71,10 +73,8 @@ def print_stats(results):
     print('Slowest             \t\t%.4f s  ' % stats.max)
     print('Amplitude           \t\t%.4f s  ' % stats.amp)
     print('Standard deviation  \t\t%.6f' % stats.stdev)
-    if rps > 1:
-        print('Requests Per Second \t\t%.2f' % rps)
-    else:
-        print('Requests Per Minute \t\t%.2f' % stats.rpm)
+    print('Requests Per Second \t\t%.2f' % rps)
+    print('Requests Per Minute \t\t%.2f' % stats.rpm)
     print('')
     print('-------- Status codes --------')
     for code, items in results.status_code_counter.items():
