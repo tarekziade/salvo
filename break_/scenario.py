@@ -33,7 +33,7 @@ async def http_test(session):
         res.incr(resp.status, time.time() - start)
 
 
-def run_test(url, results, pulse_args):
+def run_test(url, results, break_args):
     args = namedtuple('args', '')
     args.force_shutdown = False
     args.ramp_up = .0
@@ -42,13 +42,13 @@ def run_test(url, results, pulse_args):
     args.exception = True
     args.processes = 1
     args.debug = True
-    args.workers = pulse_args.concurrency
+    args.workers = break_args.concurrency
     args.console = True
     args.statsd = False
     args.single_mode = None
-    args.max_runs = pulse_args.requests
-    if pulse_args.duration:
-        args.duration = pulse_args.duration
+    args.max_runs = break_args.requests
+    if break_args.duration:
+        args.duration = break_args.duration
     else:
         args.duration = 9999
     args.delay = .0
@@ -59,9 +59,9 @@ def run_test(url, results, pulse_args):
     args.fail = None
     args.force_reconnection = False
     args.scenario = 'break_.scenario'
-    molotov.set_var('method', pulse_args.method)
+    molotov.set_var('method', break_args.method)
     molotov.set_var('url', url)
     molotov.set_var('results', results)
-    molotov.set_var('auth', pulse_args.auth)
-    molotov.set_var('content_type', pulse_args.content_type)
+    molotov.set_var('auth', break_args.auth)
+    molotov.set_var('content_type', break_args.content_type)
     run(args)
