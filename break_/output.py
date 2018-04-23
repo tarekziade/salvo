@@ -95,7 +95,8 @@ class RunResults(object):
 
     def __init__(self, num=1, quiet=False):
         self.status_code_counter = defaultdict(list)
-        self.errors = []
+        self.errors = defaultdict(int)
+        self.errors_desc = {}
         self.total_time = 0
         if num is not None:
             self._progress_bar = AnimatedProgressBar(

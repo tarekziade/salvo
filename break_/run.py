@@ -145,7 +145,11 @@ def main():
         sys.exit(1)
 
     if not args.json_output:
-        print_errors(res.errors)
+        if len(res.errors) > 0:
+            print('')
+            print('-------- Errors --------')
+            for code, desc in res.errors_desc.items():
+                print('%s (%d occurences)' % (desc, res.errors[code]))
         print_stats(res)
     else:
         print_json(res)

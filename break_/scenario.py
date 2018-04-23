@@ -26,11 +26,16 @@ async def http_test(session):
     url = molotov.get_var('url')
     res = molotov.get_var('results')
     meth = molotov.get_var('method')
-    start = time.time()
     meth = getattr(session, meth.lower())
 
-    async with meth(url) as resp:
-        res.incr(resp.status, time.time() - start)
+    start = time.time()
+    try:
+        async with meth(url) as resp:
+            res.incr(resp.status, time.time() - start)
+    except Exception as exc:
+        res.errors[exc.errno] += 1
+        if exc.errno not in res.errors_desc:
+            res.errors_desc[exc.errno] = exc
 
 
 def run_test(url, results, break_args):
@@ -39,9 +44,9 @@ def run_test(url, results, break_args):
     args.ramp_up = .0
     args.verbose = 0
     args.quiet = True
-    args.exception = True
+    args.exception = False
     args.processes = 1
-    args.debug = True
+    args.debug = False
     args.workers = break_args.concurrency
     args.console = True
     args.statsd = False
