@@ -24,13 +24,16 @@ def resolve(url):
     else:
         port = parts.port
 
-    original = parts.hostname
-    resolved = gethostbyname(parts.hostname)
+    hostname = parts.hostname
 
     # Don't use a resolved hostname for SSL requests otherwise the
     # certificate will not match the IP address (resolved)
-    host = resolved if parts.scheme != 'https' else parts.host
-    netloc = '%s:%d' % (host, port) if port else host
+    if parts.scheme != 'https':
+        resolved = gethostbyname(hostname)
+        netloc = '%s:%d' % (resolved, port) if port else resolved
+    else:
+        resolved = hostname
+        netloc = parts.netloc
 
     if port not in (443, 80):
         host += ':%d' % port
@@ -39,4 +42,4 @@ def resolve(url):
     parts = (parts.scheme, netloc, parts.path or '',
              '', parts.query or '', parts.fragment or '')
 
-    return urlunparse(parts), original, host
+    return urlunparse(parts), hostname, resolved

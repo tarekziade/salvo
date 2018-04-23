@@ -18,7 +18,7 @@ def print_errors(errors):
 
 RunStats = namedtuple(
     'RunStats', ['count', 'total_time', 'rps', 'avg', 'min',
-                 'max', 'amp', 'stdev'])
+                 'max', 'amp', 'stdev', 'rpm'])
 
 
 def calc_stats(results):
@@ -36,11 +36,14 @@ def calc_stats(results):
 
     if cum_time == 0 or len(all_res) == 0:
         rps = avg = min_ = max_ = amp = stdev = 0
+        rpm = 0
     else:
         if results.total_time == 0:
             rps = 0
+            rpm = 0
         else:
-            rps = len(all_res) / float(results.total_time)
+            rps = float(len(all_res)) / float(results.total_time)
+            rpm = rps * 60
         avg = sum(all_res) / len(all_res)
         max_ = max(all_res)
         min_ = min(all_res)
@@ -48,7 +51,8 @@ def calc_stats(results):
         stdev = math.sqrt(sum((x-avg)**2 for x in all_res) / count)
 
     return (
-        RunStats(count, results.total_time, rps, avg, min_, max_, amp, stdev)
+        RunStats(count, results.total_time, rps, avg, min_, max_, amp, stdev,
+                 rpm)
     )
 
 
@@ -67,7 +71,10 @@ def print_stats(results):
     print('Slowest             \t\t%.4f s  ' % stats.max)
     print('Amplitude           \t\t%.4f s  ' % stats.amp)
     print('Standard deviation  \t\t%.6f' % stats.stdev)
-    print('Requests Per Second \t\t%d' % rps)
+    if rps > 1:
+        print('Requests Per Second \t\t%.2f' % rps)
+    else:
+        print('Requests Per Minute \t\t%.2f' % stats.rpm)
     print('')
     print('-------- Status codes --------')
     for code, items in results.status_code_counter.items():
@@ -98,6 +105,7 @@ class RunResults(object):
 
     def incr(self, status=200, duration=0):
         self.status_code_counter[status].append(duration)
+        self.total_time += duration
         if self.quiet:
             return
         if self._progress_bar is not None:
