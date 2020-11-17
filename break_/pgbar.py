@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from __future__ import print_function
+
 """
 progressbar.py hosted on https://github.com/ikame/progressbar
 
@@ -56,9 +57,16 @@ class ProgressBar(object):
         incremental
     """
 
-    def __init__(self, start=0, end=10, width=12, fill='=', blank='.',
-                 format='[%(fill)s>%(blank)s] %(progress)s%%',
-                 incremental=True):
+    def __init__(
+        self,
+        start=0,
+        end=10,
+        width=12,
+        fill="=",
+        blank=".",
+        format="[%(fill)s>%(blank)s] %(progress)s%%",
+        incremental=True,
+    ):
         super(ProgressBar, self).__init__()
 
         self.start = start
@@ -83,8 +91,11 @@ class ProgressBar(object):
         progressed = int(self.progress / self.step)  # fix
         fill = progressed * self.fill
         blank = (self.width - progressed) * self.blank
-        return self.format % {'fill': fill, 'blank': blank,
-                              'progress': int(self.progress)}
+        return self.format % {
+            "fill": fill,
+            "blank": blank,
+            "progress": int(self.progress),
+        }
 
     __repr__ = __str__
 
@@ -106,18 +117,18 @@ class AnimatedProgressBar(ProgressBar):
 
     def __init__(self, *args, **kwargs):
         super(AnimatedProgressBar, self).__init__(*args, **kwargs)
-        self.stdout = kwargs.get('stdout', sys.stdout)
+        self.stdout = kwargs.get("stdout", sys.stdout)
 
     def show_progress(self):
-        if hasattr(self.stdout, 'isatty') and self.stdout.isatty():
-            self.stdout.write('\r')
+        if hasattr(self.stdout, "isatty") and self.stdout.isatty():
+            self.stdout.write("\r")
         else:
-            self.stdout.write('\n')
+            self.stdout.write("\n")
         self.stdout.write(str(self))
         self.stdout.flush()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     p = AnimatedProgressBar(end=100, width=80)
 
     while True:
@@ -126,4 +137,4 @@ if __name__ == '__main__':
         time.sleep(0.1)
         if p.progress == 100:
             break
-    print('')  # new line
+    print("")  # new line

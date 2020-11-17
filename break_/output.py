@@ -7,6 +7,7 @@ from break_.pgbar import AnimatedProgressBar
 
 def print_json(results):
     import json
+
     stats = calc_stats(results)
     print(json.dumps(stats._asdict()))
 
@@ -14,15 +15,16 @@ def print_json(results):
 def print_errors(errors):
     if len(errors) == 0:
         return
-    print('')
-    print('-------- Errors --------')
+    print("")
+    print("-------- Errors --------")
     for error in errors:
         print(error)
 
 
 RunStats = namedtuple(
-    'RunStats', ['count', 'total_time', 'rps', 'avg', 'min',
-                 'max', 'amp', 'stdev', 'rpm'])
+    "RunStats",
+    ["count", "total_time", "rps", "avg", "min", "max", "amp", "stdev", "rpm"],
+)
 
 
 def calc_stats(results):
@@ -52,36 +54,32 @@ def calc_stats(results):
         max_ = max(all_res)
         min_ = min(all_res)
         amp = max(all_res) - min(all_res)
-        stdev = math.sqrt(sum((x-avg)**2 for x in all_res) / count)
+        stdev = math.sqrt(sum((x - avg) ** 2 for x in all_res) / count)
 
-    return (
-        RunStats(count, results.total_time, rps, avg, min_, max_, amp, stdev,
-                 rpm)
-    )
-
+    return RunStats(count, results.total_time, rps, avg, min_, max_, amp, stdev, rpm)
 
 
 def print_stats(results):
     stats = calc_stats(results)
     rps = stats.rps
 
-    print('')
-    print('-------- Results --------')
+    print("")
+    print("-------- Results --------")
 
-    print('Successful calls    \t\t%r' % stats.count)
-    print('Total time          \t\t%.4f s  ' % stats.total_time)
-    print('Average             \t\t%.4f s  ' % stats.avg)
-    print('Fastest             \t\t%.4f s  ' % stats.min)
-    print('Slowest             \t\t%.4f s  ' % stats.max)
-    print('Amplitude           \t\t%.4f s  ' % stats.amp)
-    print('Standard deviation  \t\t%.6f' % stats.stdev)
-    print('Requests Per Second \t\t%.2f' % rps)
-    print('Requests Per Minute \t\t%.2f' % stats.rpm)
-    print('')
-    print('-------- Status codes --------')
+    print("Successful calls    \t\t%r" % stats.count)
+    print("Total time          \t\t%.4f s  " % stats.total_time)
+    print("Average             \t\t%.4f s  " % stats.avg)
+    print("Fastest             \t\t%.4f s  " % stats.min)
+    print("Slowest             \t\t%.4f s  " % stats.max)
+    print("Amplitude           \t\t%.4f s  " % stats.amp)
+    print("Standard deviation  \t\t%.6f" % stats.stdev)
+    print("Requests Per Second \t\t%.2f" % rps)
+    print("Requests Per Minute \t\t%.2f" % stats.rpm)
+    print("")
+    print("-------- Status codes --------")
     for code, items in results.status_code_counter.items():
-        print('Code %d          \t\t%d times.' % (code, len(items)))
-    print('')
+        print("Code %d          \t\t%d times." % (code, len(items)))
+    print("")
 
 
 class RunResults(object):
@@ -99,21 +97,13 @@ class RunResults(object):
         self.errors_desc = {}
         self.total_time = 0
         if num is not None:
-            self._progress_bar = AnimatedProgressBar(
-                end=num,
-                width=65)
+            self._progress_bar = AnimatedProgressBar(end=num, width=65)
         else:
             self._progress_bar = None
         self.quiet = quiet
-        self.start_time = self.total_time = 0
-
-    def start(self):
-        self.start_time = time.time()
-
-    def stop(self):
-        self.total_time = time.time() - self.start_time
 
     def incr(self, status=200, duration=0):
+        self.total_time += duration
         self.status_code_counter[status].append(duration)
         if self.quiet:
             return
@@ -121,5 +111,5 @@ class RunResults(object):
             self._progress_bar + 1
             self._progress_bar.show_progress()
         else:
-            sys.stdout.write('.')
+            sys.stdout.write(".")
             sys.stdout.flush()

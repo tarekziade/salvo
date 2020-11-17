@@ -1,45 +1,37 @@
 from urllib.parse import urlparse, urlunparse
 from socket import gethostbyname
+import importlib
+import sys
+
+from molotov.util import request
 
 
-def print_server_info(url, method, headers=None):
-    res = requests.head(url)
-    print(
-        'Server Software: %s' %
-        res.headers.get('server', 'Unknown'))
-    print('Running %s %s' % (method, url))
-
+def print_server_info(url, method, headers=None, stream=sys.stdout):
+    res = request(url, "HEAD", headers=headers)
+    server = res["headers"].get("server", "Unknown")
+    stream.write(f"Server Software: {server}\n")
+    stream.write(f"Running {method} {url}\n")
     if headers:
         for k, v in headers.items():
-            print('\t%s: %s' % (k, v))
+            stream.write(f"\t{k}: {v}\n")
+    stream.flush()
 
 
-def resolve(url):
-    parts = urlparse(url)
+def resolve(name):
+    func = None
 
-    if not parts.port and parts.scheme == 'https':
-        port = 443
-    elif not parts.port and parts.scheme == 'http':
-        port = 80
+    if "." in name:
+        splitted = name.split(".")
+        mod_name = ".".join(splitted[:-1])
+        func_name = splitted[-1]
+        mod = importlib.import_module(mod_name)
+        func = getattr(mod, func_name)
     else:
-        port = parts.port
+        for ns in globals(), __builtins__:
+            if name in ns:
+                func = ns[name]
+                break
 
-    hostname = parts.hostname
-
-    # Don't use a resolved hostname for SSL requests otherwise the
-    # certificate will not match the IP address (resolved)
-    if parts.scheme != 'https':
-        resolved = gethostbyname(hostname)
-        netloc = '%s:%d' % (resolved, port) if port else resolved
-    else:
-        resolved = hostname
-        netloc = parts.netloc
-
-    if port not in (443, 80):
-        hostname += ':%d' % port
-        resolved += ':%d' % port
-
-    parts = (parts.scheme, netloc, parts.path or '',
-             '', parts.query or '', parts.fragment or '')
-
-    return urlunparse(parts), hostname, resolved
+    if func is None:
+        raise ImportError(f"Cannot find '{name}'")
+    return func
