@@ -7,13 +7,14 @@ from molotov.util import request
 
 
 def print_server_info(url, method, headers=None, stream=sys.stdout):
+    stream.write("-------- Server info --------\n\n")
     res = request(url, "HEAD", headers=headers)
     server = res["headers"].get("server", "Unknown")
     stream.write(f"Server Software: {server}\n")
-    stream.write(f"Running {method} {url}\n")
     if headers:
         for k, v in headers.items():
-            stream.write(f"\t{k}: {v}\n")
+            stream.write(f"{k}: {v}\n")
+    stream.write("\n")
     stream.flush()
 
 

@@ -4,7 +4,7 @@ import sys
 from socket import gaierror
 
 from break_ import __version__
-from break_.output import print_errors, print_stats, print_json, RunResults
+from break_.output import print_errors, RunResults
 from break_.exceptions import RequestException
 from break_.util import print_server_info
 
@@ -14,22 +14,29 @@ from molotov.util import resolve
 logger = logging.getLogger("break")
 _VERBS = ("GET", "POST", "DELETE", "PUT", "HEAD", "OPTIONS")
 _DATA_VERBS = ("POST", "PUT")
+_H = "--------"
 
 
 def load(url, args):
     if not args.quiet:
         print_server_info(url, args.method, headers=args.headers)
         if args.requests:
-            print(f"Running {args.requests} queries - concurrency {args.concurrency}")
+            print(_H + f" Running {args.requests} queries - concurrency "
+                       f"{args.concurrency} " + _H)
         else:
-            print(f"Running for {args.duration} - concurrency {args.concurrency}")
+            print(_H + f" Running for {args.duration} - concurrency "
+                       f"{args.concurrency} " + _H)
 
+    print("")
     num = args.requests and args.concurrency * args.requests or None
     res = RunResults(num, args.quiet)
 
     from break_.scenario import run_test
 
-    molotov_res = run_test(url, res, args)
+    try:
+        molotov_res = run_test(url, res, args)
+    finally:
+        print("")
     return res, molotov_res
 
 
@@ -189,11 +196,12 @@ def main():
         if len(res.errors) > 0:
             print("")
             print("-------- Errors --------")
+            print("")
             for code, desc in res.errors_desc.items():
                 print("%s (%d occurences)" % (desc, res.errors[code]))
-        print_stats(res)
+        res.print_stats()
     else:
-        print_json(res)
+        res.print_json()
 
     logger.info("Bye!")
 

@@ -1,44 +1,5 @@
-#!/usr/bin/env python
-from __future__ import print_function
-
 """
 progressbar.py hosted on https://github.com/ikame/progressbar
-
-A Python module with a ProgressBar class which can be used to represent a
-task's progress in the form of a progress bar and it can be formated in a
-basic way.
-
-Here is some basic usage with the default options:
-
-    >>> from progressbar import ProgressBar
-    >>> p = ProgressBar()
-    >>> print p
-    [>............] 0%
-    >>> p + 1
-    >>> print p
-    [=>...........] 10%
-    >>> p + 9
-    >>> print p
-    [============>] 0%
-
-And here another example with different options:
-
-    >>> from progressbar import ProgressBar
-    >>> custom_options = {
-    ...     'end': 100,
-    ...     'width': 20,
-    ...     'fill': '#',
-    ...     'format': '%(progress)s%% [%(fill)s%(blank)s]'
-    ... }
-    >>> p = ProgressBar(**custom_options)
-    >>> print p
-    0% [....................]
-    >>> p + 5
-    >>> print p
-    5% [#...................]
-    >>> p + 9
-    >>> print p
-    100% [####################]
 """
 import sys
 import time
@@ -126,15 +87,3 @@ class AnimatedProgressBar(ProgressBar):
             self.stdout.write("\n")
         self.stdout.write(str(self))
         self.stdout.flush()
-
-
-if __name__ == "__main__":
-    p = AnimatedProgressBar(end=100, width=80)
-
-    while True:
-        p + 5
-        p.show_progress()
-        time.sleep(0.1)
-        if p.progress == 100:
-            break
-    print("")  # new line
