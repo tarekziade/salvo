@@ -2,10 +2,10 @@ import pytest
 import io
 from unittest import mock
 
-from break_.util import print_server_info, resolve
+from salvo.util import print_server_info, resolve
 
 
-@mock.patch("break_.util.request")
+@mock.patch("salvo.util.request")
 def test_print_server_info(request):
     request.return_value = {"headers": {"server": "Super"}}
     headers = {"one": "two"}
@@ -17,7 +17,7 @@ def test_print_server_info(request):
 
 
 def test_resolve():
-    res = resolve("break_.util.print_server_info")
+    res = resolve("salvo.util.print_server_info")
     assert res is print_server_info
 
     res = resolve("resolve")

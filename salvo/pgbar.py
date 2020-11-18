@@ -2,7 +2,6 @@
 progressbar.py hosted on https://github.com/ikame/progressbar
 """
 import sys
-import time
 
 
 class ProgressBar(object):

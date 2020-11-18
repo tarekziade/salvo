@@ -1,5 +1,2 @@
 [run]
-omit = pulser/tests/*
-
-[report]
-omit = pulser/tests/*
+omit = salvo/__init__.py,salvo/tests/*,*tmp*/*,.tox/*

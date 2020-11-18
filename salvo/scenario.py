@@ -2,7 +2,7 @@ import time
 import base64
 from collections import namedtuple
 
-from break_.util import resolve
+from salvo.util import resolve
 
 import molotov
 from molotov.run import run
@@ -60,22 +60,22 @@ async def http_test(session):
             res.errors_desc[exc.errno] = exc
 
 
-def run_test(url, results, break_args):
+def run_test(url, results, salvoargs):
     args = namedtuple("args", "")
     args.force_shutdown = False
     args.ramp_up = 0.0
-    args.verbose = break_args.verbose
-    args.quiet = break_args.quiet
+    args.verbose = salvoargs.verbose
+    args.quiet = salvoargs.quiet
     args.exception = False
     args.processes = 1
     args.debug = False
-    args.workers = break_args.concurrency
+    args.workers = salvoargs.concurrency
     args.console = True
     args.statsd = False
     args.single_mode = None
-    args.max_runs = break_args.requests
-    if break_args.duration:
-        args.duration = break_args.duration
+    args.max_runs = salvoargs.requests
+    if salvoargs.duration:
+        args.duration = salvoargs.duration
     else:
         args.duration = 9999
     args.delay = 0.0
@@ -85,20 +85,20 @@ def run_test(url, results, break_args):
     args.use_extension = []
     args.fail = None
     args.force_reconnection = False
-    args.scenario = "break_.scenario"
+    args.scenario = "salvo.scenario"
     args.disable_dns_resolve = False
     args.single_run = False
 
-    molotov.set_var("method", break_args.method)
+    molotov.set_var("method", salvoargs.method)
     molotov.set_var("url", url)
     molotov.set_var("results", results)
-    molotov.set_var("auth", break_args.auth)
-    molotov.set_var("content_type", break_args.content_type)
-    molotov.set_var("data", break_args.data)
-    if break_args.pre_hook is not None:
-        molotov.set_var("pre_hook", resolve(break_args.pre_hook))
-    if break_args.post_hook is not None:
-        molotov.set_var("post_hook", resolve(break_args.post_hook))
+    molotov.set_var("auth", salvoargs.auth)
+    molotov.set_var("content_type", salvoargs.content_type)
+    molotov.set_var("data", salvoargs.data)
+    if salvoargs.pre_hook is not None:
+        molotov.set_var("pre_hook", resolve(salvoargs.pre_hook))
+    if salvoargs.post_hook is not None:
+        molotov.set_var("post_hook", resolve(salvoargs.post_hook))
 
     class Stream:
         def __init__(self):

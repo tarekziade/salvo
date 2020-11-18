@@ -1,5 +1,3 @@
-from urllib.parse import urlparse, urlunparse
-from socket import gethostbyname
 import importlib
 import sys
 

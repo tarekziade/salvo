@@ -10,7 +10,7 @@ INSTALL = $(BIN)/pip install --no-deps
 all: build
 
 build:
-	virtualenv-3.6 $(VENV)
+	python3.9 -m venv $(VENV)
 	$(VENV)/bin/pip install tox
 
 clean:

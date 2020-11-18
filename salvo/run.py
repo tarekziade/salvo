@@ -3,10 +3,10 @@ import logging
 import sys
 from socket import gaierror
 
-from break_ import __version__
-from break_.output import print_errors, RunResults
-from break_.exceptions import RequestException
-from break_.util import print_server_info
+from salvo import __version__
+from salvo.output import print_errors, RunResults
+from salvo.exceptions import RequestException
+from salvo.util import print_server_info
 
 from molotov.util import resolve
 
@@ -21,17 +21,21 @@ def load(url, args):
     if not args.quiet:
         print_server_info(url, args.method, headers=args.headers)
         if args.requests:
-            print(_H + f" Running {args.requests} queries - concurrency "
-                       f"{args.concurrency} " + _H)
+            print(
+                _H + f" Running {args.requests} queries - concurrency "
+                f"{args.concurrency} " + _H
+            )
         else:
-            print(_H + f" Running for {args.duration} - concurrency "
-                       f"{args.concurrency} " + _H)
+            print(
+                _H + f" Running for {args.duration} - concurrency "
+                f"{args.concurrency} " + _H
+            )
 
     print("")
     num = args.requests and args.concurrency * args.requests or None
     res = RunResults(num, args.quiet)
 
-    from break_.scenario import run_test
+    from salvo.scenario import run_test
 
     try:
         molotov_res = run_test(url, res, args)
@@ -76,12 +80,17 @@ def main():
         "--data",
         help=('Data. Prefixed by "py:" to point ' "a python callable."),
         type=str,
+        default=None,
     )
 
     parser.add_argument("-c", "--concurrency", help="Concurrency", type=int, default=1)
 
     parser.add_argument(
-        "-a", "--auth", help="Basic authentication user:password", type=str
+        "-a",
+        "--auth",
+        help="Basic authentication user:password",
+        type=str,
+        default=None,
     )
 
     parser.add_argument(
@@ -99,6 +108,7 @@ def main():
             "function definition"
         ),
         type=str,
+        default=None,
     )
 
     parser.add_argument(
@@ -113,16 +123,22 @@ def main():
             "failed request."
         ),
         type=str,
+        default=None,
     )
 
     parser.add_argument(
         "--json-output",
         help="Prints the results in JSON instead of the " "default format",
         action="store_true",
+        default=False,
     )
 
     parser.add_argument(
-        "-q", "--quiet", help="Don't display progress bar", action="store_true"
+        "-q",
+        "--quiet",
+        help="Don't display progress bar",
+        action="store_true",
+        default=False,
     )
 
     group = parser.add_mutually_exclusive_group()

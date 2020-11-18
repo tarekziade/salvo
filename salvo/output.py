@@ -1,10 +1,9 @@
-import time
 import sys
 import math
 import json
 from collections import defaultdict, namedtuple
 
-from break_.pgbar import AnimatedProgressBar
+from salvo.pgbar import AnimatedProgressBar
 
 
 RunStats = namedtuple(
@@ -20,6 +19,7 @@ def print_errors(errors, stream=sys.stdout):
     stream.write("\n-------- Errors --------\n")
     for error in errors:
         stream.write(error + "\n")
+    stream.flush()
 
 
 class RunResults(object):
@@ -103,7 +103,7 @@ class RunResults(object):
         stream.write("\n")
         stream.flush()
 
-    def print_json(self):
+    def print_json(self, stream=sys.stdout):
         stats = self._calc_stats()
         stream.write(json.dumps(stats._asdict()) + "\n")
         stream.flush()

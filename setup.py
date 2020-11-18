@@ -1,34 +1,38 @@
 from setuptools import setup, find_packages
-from break_ import __version__
+from salvo import __version__
 import sys
 
-install_requires = ['molotov']
-description = ''
+install_requires = ["molotov"]
+description = ""
 
-for file_ in ('README', 'CHANGES', 'CONTRIBUTORS'):
-    with open('%s.rst' % file_) as f:
-        description += f.read() + '\n\n'
+for file_ in ("README", "CHANGES", "CONTRIBUTORS"):
+    with open("%s.rst" % file_) as f:
+        description += f.read() + "\n\n"
 
 
-classifiers = ["License :: OSI Approved :: Apache Software License",
-               "Programming Language :: Python",
-               "Programming Language :: Python :: 3.5",
-               "Programming Language :: Python :: 3.6"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+]
 
-setup(name='break',
-      version=__version__,
-      url='https://github.com/tarekziade/break',
-      packages=find_packages(),
-      long_description=description,
-      description="Simple HTTP Load tester",
-      author="Tarek Ziade",
-      author_email="tarek@ziade.org",
-      include_package_data=True,
-      zip_safe=False,
-      classifiers=classifiers,
-      install_requires=install_requires,
-      test_suite='unittest.collector',
-      entry_points="""
+setup(
+    name="salvo",
+    version=__version__,
+    url="https://github.com/tarekziade/salvo",
+    packages=find_packages(),
+    long_description=description,
+    description="Simple HTTP Load tester",
+    author="Tarek Ziade",
+    author_email="tarek@ziade.org",
+    include_package_data=True,
+    zip_safe=False,
+    classifiers=classifiers,
+    install_requires=install_requires,
+    test_suite="unittest.collector",
+    entry_points="""
       [console_scripts]
-      break = break_.run:main
-      """)
+      salvo = salvo.run:main
+      """,
+)
