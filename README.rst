@@ -30,7 +30,7 @@ Basic usage
 
 Basic usage example: 100 queries with a maximum concurrency of 10 users::
 
-    % bin/salvo http://localhost:80 -c 10 -n 100
+    % salvo http://localhost:80 -c 10 -n 100
     -------- Server info --------
 
     Server Software: nginx/1.18.0
