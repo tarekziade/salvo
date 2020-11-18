@@ -1,29 +1,28 @@
-Break
+Salvo
 =====
-
-WORK IN PROGRESS. THIS IS NOT WORKING YET, DO NOT INSTALL
 
 This is the replacement for https://github.com/tarekziade/boom
 
-**Break** is a simple command line tool to send some load to an HTTP endpoint.
+**Salvo** is a simple command line tool to send some load to an HTTP(S)
+endpoint.
 
-Break is a script you can use to quickly smoke-test your
+Salvo is a script you can use to quickly smoke-test your
 web app deployment. If you need a more complex tool,
 I'd suggest looking at `Molotov <http://molotov.readthedocs.io>`_
 
-Break was specifically written to replace my Apache Bench (ab) usage. 
-Break is based on Molotov, which uses Python 3 asyncio & aiohttp.
+Salvo was specifically written to replace my Apache Bench (ab) usage.
+Salvo is based on Molotov, which uses Python 3 asyncio & aiohttp.
 
 
 Installation
 ============
 
-Break requires Python 3.5.x+ and **Molotov**, which gets installed as a dependency.
+Salvo requires Python 3.6+ and **Molotov**, which gets installed as a
+dependency.
 
 Just do::
 
-
-    $ pip install break
+    $ pip install salvo
 
 
 Basic usage
@@ -32,7 +31,7 @@ Basic usage
 Basic usage example: 100 queries with a maximum concurrency of
 10 users::
 
-    $ break http://localhost:80 -c 10 -n 100
+    $ salvo http://localhost:80 -c 10 -n 100
     Server Software: nginx/1.2.2
     Running 100 queries - concurrency: 10.
     Starting the load [===================================] Done
@@ -48,10 +47,10 @@ Basic usage example: 100 queries with a maximum concurrency of
 
 
 
-Break has more options::
+Salvo has more options::
 
-    $ break --help
-    usage: break [-h] [--version] [-m {GET,POST,DELETE,PUT,HEAD,OPTIONS}]
+    $ salvo --help
+    usage: salvo [-h] [--version] [-m {GET,POST,DELETE,PUT,HEAD,OPTIONS}]
                 [--content-type CONTENT_TYPE] [-D DATA] [-c CONCURRENCY] [-a AUTH]
                 [--header HEADER] [--pre-hook PRE_HOOK] [--post-hook POST_HOOK]
                 [--json-output] [-n REQUESTS | -d DURATION]
@@ -84,7 +83,7 @@ Break has more options::
                             callable which will be executed after a request is
                             done for example: eg. post_hook(response). It must
                             return a given response parameter or raise an
-                            `break.break.RequestException` for failed request.
+                            `salvo.salvo.RequestException` for failed request.
       --json-output         Prints the results in JSON instead of the default
                             format
       -n REQUESTS, --requests REQUESTS
@@ -97,20 +96,20 @@ Calling from Python code
 ========================
 
 You can trigger load testing from Python code by importing the function
-`break_.load` directly, as follows::
+`salvo.load` directly, as follows::
 
-    from break_ import load
+    from salvo import load
 
     result = load('http://example.com/', 1, 1, 0, 'GET', None, 'text/plain', None, quiet=True)
-    
-    
+
+
 Contribute
 ==========
 
-Break is very simple and anyone familiar with Python can contribute.
+Salvo is very simple and anyone familiar with Python can contribute.
 
 If you are interested in this project, you are welcome to join the fun at
-https://github.com/tarekziade/break
+https://github.com/tarekziade/salvo
 
 Make sure to add yourself to the contributors list if your PR gets merged. And
 make sure it's in alphabetical order!
