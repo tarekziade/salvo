@@ -92,17 +92,6 @@ Salvo has more options::
                             Duration in seconds
 
 
-Calling from Python code
-========================
-
-You can trigger load testing from Python code by importing the function
-`salvo.load` directly, as follows::
-
-    from salvo import load
-
-    result = load('http://example.com/', 1, 1, 0, 'GET', None, 'text/plain', None, quiet=True)
-
-
 Contribute
 ==========
 
