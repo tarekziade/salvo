@@ -1,3 +1,4 @@
+import asyncio
 import pathlib
 import os
 import socketserver
@@ -101,3 +102,20 @@ def coserver(port=8888):
             _CO["server"].join(timeout=1.0)
             _CO["server"].terminate()
             _CO["server"] = None
+
+
+def dedicatedloop(func):
+    @functools.wraps(func)
+    def _loop(*args, **kw):
+        old_loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        try:
+            return func(*args, **kw)
+        finally:
+            if not loop.is_closed():
+                loop.stop()
+                loop.close()
+            asyncio.set_event_loop(old_loop)
+
+    return _loop

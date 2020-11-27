@@ -33,6 +33,6 @@ setup(
     test_suite="unittest.collector",
     entry_points="""
       [console_scripts]
-      salvo = salvo.run:main
+      salvo = salvo.run:console_main
       """,
 )

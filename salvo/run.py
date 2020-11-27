@@ -1,14 +1,11 @@
 import argparse
 import logging
 import sys
-from socket import gaierror
 
 from salvo import __version__
 from salvo.output import print_errors, RunResults
 from salvo.exceptions import RequestException
 from salvo.util import print_server_info
-
-from molotov.util import resolve
 
 
 logger = logging.getLogger("break")
@@ -173,12 +170,6 @@ def main():
         parser.print_usage()
         sys.exit(0)
 
-    try:
-        url, original, resolved = resolve(args.url)
-    except gaierror as e:
-        print_errors(("DNS resolution failed for %s (%s)" % (args.url, str(e)),))
-        sys.exit(1)
-
     def _split(header):
         header = header.split(":")
 
@@ -194,13 +185,10 @@ def main():
     else:
         headers = dict([_split(header) for header in args.header])
 
-    if original != resolved and "Host" not in headers:
-        headers["Host"] = original
-
     args.headers = headers
 
     try:
-        res, molotov_res = load(url, args)
+        res, molotov_res = load(args.url, args)
         if molotov_res["SETUP_FAILED"] > 0 or molotov_res["SESSION_SETUP_FAILED"] > 0:
             sys.exit(1)
 
@@ -220,6 +208,12 @@ def main():
         res.print_json()
 
     logger.info("Bye!")
+    return res, molotov_res
+
+
+def console_main():
+    main()
+    return 0
 
 
 if __name__ == "__main__":

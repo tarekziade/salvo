@@ -1,2 +1,2 @@
 [run]
-omit = salvo/__init__.py,salvo/tests/*,*tmp*/*,.tox/*
+omit = salvo/pgbar.py,salvo/__init__.py,salvo/tests/*,*tmp*/*,.tox/*
