@@ -30,11 +30,12 @@ class RunResults(object):
     of the run and an animated progress bar.
     """
 
-    def __init__(self, num=1, quiet=False):
+    def __init__(self, server_info=None, num=1, quiet=False):
         self.status_code_counter = defaultdict(list)
         self.errors = defaultdict(int)
         self.errors_desc = {}
         self.total_time = 0
+        self.server_info = server_info
         if num is not None:
             self._progress_bar = AnimatedProgressBar(end=num, width=65)
         else:
@@ -103,7 +104,12 @@ class RunResults(object):
         stream.write("\n")
         stream.flush()
 
+    def get_json(self):
+        res = self._calc_stats()._asdict()
+        if self.server_info is not None:
+            res["server"] = self.server_info
+        return res
+
     def print_json(self, stream=sys.stdout):
-        stats = self._calc_stats()
-        stream.write(json.dumps(stats._asdict()) + "\n")
+        stream.write(json.dumps(self.get_json()) + "\n")
         stream.flush()

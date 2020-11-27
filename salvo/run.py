@@ -5,7 +5,7 @@ import sys
 from salvo import __version__
 from salvo.output import print_errors, RunResults
 from salvo.exceptions import RequestException
-from salvo.util import print_server_info
+from salvo.util import get_server_info, print_server_info
 
 
 logger = logging.getLogger("break")
@@ -14,9 +14,11 @@ _DATA_VERBS = ("POST", "PUT")
 _H = "--------"
 
 
-def load(url, args):
+def load(url, args, stream=sys.stdout):
+    server_info = get_server_info(url, args.method, headers=args.headers)
+
     if not args.quiet:
-        print_server_info(url, args.method, headers=args.headers)
+        print_server_info(server_info, stream)
         if args.requests:
             print(
                 _H + f" Running {args.requests} queries - concurrency "
@@ -28,16 +30,19 @@ def load(url, args):
                 f"{args.concurrency} " + _H
             )
 
-    print("")
+        print("")
+
     num = args.requests and args.concurrency * args.requests or None
-    res = RunResults(num, args.quiet)
+    res = RunResults(server_info, num, args.quiet)
 
     from salvo.scenario import run_test
 
     try:
         molotov_res = run_test(url, res, args)
     finally:
-        print("")
+        if not args.quiet:
+            print("")
+
     return res, molotov_res
 
 
@@ -125,7 +130,7 @@ def main():
 
     parser.add_argument(
         "--json-output",
-        help="Prints the results in JSON instead of the " "default format",
+        help="Prints the results in JSON instead of the default format",
         action="store_true",
         default=False,
     )
@@ -133,7 +138,7 @@ def main():
     parser.add_argument(
         "-q",
         "--quiet",
-        help="Don't display progress bar",
+        help="Don't display the progress bar",
         action="store_true",
         default=False,
     )
@@ -204,10 +209,11 @@ def main():
             for code, desc in res.errors_desc.items():
                 print("%s (%d occurences)" % (desc, res.errors[code]))
         res.print_stats()
+        print("Want to build a more powerful load test ? Try Molotov !")
+        print("Bye!")
     else:
         res.print_json()
 
-    logger.info("Bye!")
     return res, molotov_res
 
 

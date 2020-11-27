@@ -2,7 +2,7 @@ import pytest
 import io
 from unittest import mock
 
-from salvo.util import print_server_info, resolve
+from salvo.util import get_server_info, print_server_info, resolve
 
 
 @mock.patch("salvo.util.request")
@@ -10,7 +10,8 @@ def test_print_server_info(request):
     request.return_value = {"headers": {"server": "Super"}}
     headers = {"one": "two"}
     stream = io.StringIO()
-    print_server_info("http://example.com", "GET", headers, stream=stream)
+    info = get_server_info("http://example.com", "GET", headers)
+    print_server_info(info, stream=stream)
     stream.seek(0)
     res = stream.read()
     assert "Server Software: Super" in res

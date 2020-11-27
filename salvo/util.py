@@ -4,14 +4,21 @@ import sys
 from molotov.util import request
 
 
-def print_server_info(url, method, headers=None, stream=sys.stdout):
-    stream.write("-------- Server info --------\n\n")
+def get_server_info(url, method, headers):
+    info = {}
     res = request(url, "HEAD", headers=headers)
     server = res["headers"].get("server", "Unknown")
-    stream.write(f"Server Software: {server}\n")
+    info["software"] = server
     if headers:
-        for k, v in headers.items():
-            stream.write(f"{k}: {v}\n")
+        info["headers"] = dict(headers)
+    return info
+
+
+def print_server_info(info, stream=sys.stdout):
+    stream.write("-------- Server info --------\n\n")
+    stream.write(f"Server Software: {info['software']}\n")
+    for k, v in info.get("headers", {}).items():
+        stream.write(f"{k}: {v}\n")
     stream.write("\n")
     stream.flush()
 
