@@ -158,17 +158,17 @@ def main():
     if args.url is None:
         print("You need to provide an URL.")
         parser.print_usage()
-        sys.exit(0)
+        sys.exit(1)
 
     if args.data is not None and args.method not in _DATA_VERBS:
         print("You can't provide data with %r" % args.method)
         parser.print_usage()
-        sys.exit(0)
+        sys.exit(1)
 
     if args.quiet and args.verbose > 0:
         print("You can't use --quiet and --verbose at the same time")
         parser.print_usage()
-        sys.exit(0)
+        sys.exit(1)
 
     def _split(header):
         header = header.split(":")
@@ -176,7 +176,7 @@ def main():
         if len(header) != 2:
             print("A header must be of the form name:value")
             parser.print_usage()
-            sys.exit(0)
+            sys.exit(1)
 
         return header
 
