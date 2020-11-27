@@ -1,6 +1,14 @@
 Salvo
 =====
 
+.. image:: http://coveralls.io/repos/github/tarekziade/salvo/badge.svg?branch=master
+   :target: https://coveralls.io/github/tarekziade/salvo?branch=master
+
+.. image:: http://travis-ci.org/tarekziade/salvo.svg?branch=master
+   :target: https://travis-ci.org/tarekziade/salvo
+
+
+
 This is the replacement for https://github.com/tarekziade/boom
 
 **Salvo** is a simple command line tool to send some load to an HTTP(S)
