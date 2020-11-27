@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 from salvo import __version__
-import sys
+
 
 install_requires = ["molotov"]
 description = ""
