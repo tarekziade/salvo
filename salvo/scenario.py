@@ -1,3 +1,4 @@
+import asyncio
 import time
 import base64
 from collections import namedtuple
@@ -6,6 +7,7 @@ from salvo.util import resolve
 
 import molotov
 from molotov.run import run
+from molotov import util, api
 
 
 @molotov.setup()
@@ -85,7 +87,7 @@ def run_test(url, results, salvoargs):
     args.use_extension = []
     args.fail = None
     args.force_reconnection = False
-    args.scenario = "salvo.scenario"
+    args.scenario = __file__
     args.disable_dns_resolve = False
     args.single_run = False
 
@@ -95,10 +97,15 @@ def run_test(url, results, salvoargs):
     molotov.set_var("auth", salvoargs.auth)
     molotov.set_var("content_type", salvoargs.content_type)
     molotov.set_var("data", salvoargs.data)
+
     if salvoargs.pre_hook is not None:
         molotov.set_var("pre_hook", resolve(salvoargs.pre_hook))
+
     if salvoargs.post_hook is not None:
-        molotov.set_var("post_hook", resolve(salvoargs.post_hook))
+        post_hook = resolve(salvoargs.post_hook)
+        if not asyncio.iscoroutinefunction(post_hook):
+            raise Exception("The post hook needs to be a coroutine")
+        molotov.set_var("post_hook", post_hook)
 
     class Stream:
         def __init__(self):
@@ -109,6 +116,15 @@ def run_test(url, results, salvoargs):
 
         def flush(self):
             pass
+
+    # this module is going to be loaded by molotov,
+    # so we need to clear up its internal state
+    # XXX we should have a better way to do this
+    util._STOP = False
+    util._STOP_WHY = []
+    util._TIMER = None
+    api._SCENARIO.clear()
+    api._FIXTURES.clear()
 
     stream = Stream()
     res = run(args, stream=stream)

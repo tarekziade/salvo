@@ -39,6 +39,8 @@ def load(url, args, stream=sys.stdout):
 
     try:
         molotov_res = run_test(url, res, args)
+    except SystemExit as e:
+        raise Exception(f"Molotov exit {e.code}")
     finally:
         if not args.quiet:
             print("")

@@ -8,80 +8,88 @@ from salvo import __version__
 
 
 @dedicatedloop
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_display_version(stdout):
+def _test(*args):
+    code = 0
+    testargs = [sys.executable] + list(args)
+    main_res = molotov_res = None
 
-    testargs = [sys.executable, "--version"]
-    with patch.object(sys, "argv", testargs), coserver():
+    with patch("sys.stdout", new_callable=io.StringIO) as stdout, patch.object(
+        sys, "argv", testargs
+    ), coserver():
         try:
-            main()
-        except SystemExit:
-            pass
-        else:
-            raise AssertionError()
-
-    stdout.seek(0)
-    res = stdout.read().strip()
-    assert res == __version__
-
-
-@dedicatedloop
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_no_url(stdout):
-    testargs = [sys.executable]
-    with patch.object(sys, "argv", testargs):
-        try:
-            main()
+            main_res, molotov_res = main()
         except SystemExit as e:
-            assert e.code == 1
-        else:
-            raise AssertionError()
+            code = e.code
+
+        stdout.seek(0)
+        stdout = stdout.read().strip()
+
+    return code, stdout, main_res, molotov_res
 
 
-@dedicatedloop
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_data_but_wrong_verb(stdout):
-    testargs = [sys.executable, "-D", "OK", "http://localhost:8888"]
-    with patch.object(sys, "argv", testargs):
-        try:
-            main()
-        except SystemExit as e:
-            assert e.code == 1
-        else:
-            raise AssertionError()
+def assert_code(expected, *args):
+    assert _test(*args)[0] == expected
 
 
-@dedicatedloop
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_malformed_header(stdout):
-    testargs = [sys.executable, "--header", "blah", "http://localhost:8888"]
-    with patch.object(sys, "argv", testargs):
-        try:
-            main()
-        except SystemExit as e:
-            assert e.code == 1
-        else:
-            raise AssertionError()
+def assert_stdout(expected, *args):
+    assert _test(*args)[1] == expected
 
 
-@dedicatedloop
-@patch("sys.stdout", new_callable=io.StringIO)
-def test_quiet_and_verbose(stdout):
-    testargs = [sys.executable, "--quiet", "--verbose", "http://localhost:8888"]
-    with patch.object(sys, "argv", testargs):
-        try:
-            main()
-        except SystemExit as e:
-            assert e.code == 1
-        else:
-            raise AssertionError()
+def get_molotov_res(*args):
+    return _test(*args)[-1]
 
 
-@dedicatedloop
+def test_display_version():
+    assert_stdout(__version__, "--version")
+
+
+def test_no_url():
+    assert_code(1)
+
+
+def test_data_but_wrong_verb():
+    assert_code(1, "-D", "OK", "http://localhost:8888")
+
+
+def test_malformed_header():
+    assert_code(1, "--header", "blah", "http://localhost:8888")
+
+
+def test_quiet_and_verbose():
+    assert_code(1, "--quiet", "--verbose", "http://localhost:8888")
+
+
 def test_single_hit_main():
+    res = get_molotov_res("http://localhost:8888", "-n", "2")
+    assert res["OK"] == 2, res
 
-    testargs = [sys.executable, "http://localhost:8888", "-n", "2"]
-    with patch.object(sys, "argv", testargs), coserver():
-        res, molotov_res = main()
 
-    assert molotov_res["OK"] == 2, molotov_res
+_CALLS = []
+
+
+def pre_hook(meth, url, options):
+    _CALLS.append(["PRE", meth, url, options])
+    return meth, url, options
+
+
+# XXX check that it's a coroutine
+# and make a test to control
+async def post_hook(resp):
+    _CALLS.append(["POST", resp])
+    return resp
+
+
+def test_hooks():
+
+    testargs = [
+        "http://localhost:8888",
+        "-n",
+        "10",
+        "--pre-hook",
+        "salvo.tests.test_run.pre_hook",
+        "--post-hook",
+        "salvo.tests.test_run.post_hook",
+        "--verbose",
+    ]
+    get_molotov_res(*testargs)
+    assert len(_CALLS) == 20
