@@ -1,6 +1,7 @@
 from unittest.mock import patch
 import sys
 import io
+import pytest
 
 from salvo.run import main
 from salvo.tests.support import coserver, dedicatedloop
@@ -93,3 +94,57 @@ def test_hooks():
     ]
     get_molotov_res(*testargs)
     assert len(_CALLS) == 20
+
+
+async def hook_fail(*args):
+    raise Exception("Hook fail")
+
+
+def test_post_hook_fail():
+    testargs = [
+        "http://localhost:8888",
+        "-n",
+        "10",
+        "--post-hook",
+        "salvo.tests.test_run.hook_fail",
+    ]
+    res = get_molotov_res(*testargs)
+    assert res["FAILED"] == 10
+
+
+def hook_sync(*args):
+    pass
+
+
+def test_post_hook_not_async():
+    testargs = [
+        "http://localhost:8888",
+        "-n",
+        "10",
+        "--post-hook",
+        "salvo.tests.test_run.hook_sync",
+    ]
+    with pytest.raises(Exception):
+        get_molotov_res(*testargs)
+
+
+def test_auth():
+    res = get_molotov_res("http://localhost:8888", "--auth", "user:password", "-n", "2")
+    assert res["OK"] == 2, res
+
+
+def get_data(method, url, args):
+    return "DATA"
+
+
+def test_data_callable():
+    res = get_molotov_res(
+        "http://localhost:8888",
+        "-m",
+        "POST",
+        "-D",
+        "py:salvo.tests.test_run.get_data",
+        "-n",
+        "2",
+    )
+    assert res["OK"] == 2, res

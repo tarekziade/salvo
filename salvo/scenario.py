@@ -28,7 +28,7 @@ async def init_worker(worker_num, args):
         method = molotov.get_var("method")
         url = molotov.get_var("url")
         func = resolve(data.split(":")[1])
-        molotov.set_var("data", func(method, url, args))
+        molotov.set_var("data", func)
 
     return {"headers": headers}
 
@@ -40,15 +40,18 @@ async def http_test(session):
     meth = molotov.get_var("method")
 
     options = {}
-    data = molotov.get_var("data")
-    if data:
-        options["data"] = data
-
     pre_hook = molotov.get_var("pre_hook")
     if pre_hook is not None:
         meth, url, options = pre_hook(meth, url, options)
 
     post_hook = molotov.get_var("post_hook")
+    data = molotov.get_var("data")
+    if data:
+        if callable(data):
+            options["data"] = data(meth, url, options)
+        else:
+            options["data"] = data
+
     meth = getattr(session, meth.lower())
     start = time.time()
     try:
@@ -101,12 +104,16 @@ def run_test(url, results, salvoargs):
 
     if salvoargs.pre_hook is not None:
         molotov.set_var("pre_hook", resolve(salvoargs.pre_hook))
+    else:
+        molotov.set_var("pre_hook", None)
 
     if salvoargs.post_hook is not None:
         post_hook = resolve(salvoargs.post_hook)
         if not asyncio.iscoroutinefunction(post_hook):
             raise Exception("The post hook needs to be a coroutine")
         molotov.set_var("post_hook", post_hook)
+    else:
+        molotov.set_var("post_hook", None)
 
     class Stream:
         def __init__(self):
