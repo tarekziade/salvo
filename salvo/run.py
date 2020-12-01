@@ -19,21 +19,25 @@ def load(url, args, stream=sys.stdout):
 
     if not args.quiet:
         print_server_info(server_info, stream)
-        if args.requests:
+        if args.duration is None:
             print(
                 _H + f" Running {args.requests} queries - concurrency "
                 f"{args.concurrency} " + _H
             )
         else:
             print(
-                _H + f" Running for {args.duration} - concurrency "
+                _H + f" Running for ~{args.duration} seconds - concurrency "
                 f"{args.concurrency} " + _H
             )
 
         print("")
 
-    num = args.requests and args.concurrency * args.requests or None
-    res = RunResults(server_info, num, args.quiet)
+    if args.duration is not None:
+        num = None
+    else:
+        num = args.concurrency * args.requests
+
+    res = RunResults(server_info, num=num, duration=args.duration, quiet=args.quiet)
 
     from salvo.scenario import run_test
 

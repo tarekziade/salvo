@@ -75,11 +75,12 @@ def run_test(url, results, salvoargs):
     args.console = True
     args.statsd = False
     args.single_mode = None
-    args.max_runs = salvoargs.requests
     if salvoargs.duration:
         args.duration = salvoargs.duration
+        args.max_runs = None
     else:
         args.duration = 9999
+        args.max_runs = salvoargs.requests
     args.delay = 0.0
     args.sizing = False
     args.sizing_tolerance = 0.0

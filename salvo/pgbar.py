@@ -41,7 +41,7 @@ class ProgressBar(object):
 
     def __add__(self, increment):
         increment = self._get_progress(increment)
-        if 100 > self.progress + increment:
+        if self.progress + increment < 100:
             self.progress += increment
         else:
             self.progress = 100

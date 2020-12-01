@@ -1,6 +1,8 @@
+import time
 import sys
 import math
 import json
+import threading
 from collections import defaultdict, namedtuple
 
 from salvo.pgbar import AnimatedProgressBar
@@ -30,22 +32,38 @@ class RunResults(object):
     of the run and an animated progress bar.
     """
 
-    def __init__(self, server_info=None, num=1, quiet=False):
+    def __init__(self, server_info=None, num=1, quiet=False, duration=None):
         self.status_code_counter = defaultdict(list)
         self.errors = defaultdict(int)
         self.errors_desc = {}
         self.total_time = 0
         self.server_info = server_info
+        self.duration = duration
+        self.timer = None
+        self.start_time = time.time()
         if num is not None:
             self._progress_bar = AnimatedProgressBar(end=num, width=65)
+        elif duration is not None:
+            self._progress_bar = AnimatedProgressBar(end=int(duration), width=65)
+            self.timer = threading.Thread(target=self.periodic)
+            self.timer.daemon = True
+            self.timer.start()
         else:
             self._progress_bar = None
         self.quiet = quiet
 
+    def periodic(self):
+        if self.duration is None:
+            return
+        while True:
+            self._progress_bar + 1
+            self._progress_bar.show_progress()
+            time.sleep(1)
+
     def incr(self, status=200, duration=0):
         self.total_time += duration
         self.status_code_counter[status].append(duration)
-        if self.quiet:
+        if self.timer is not None or self.quiet:
             return
         if self._progress_bar is not None:
             self._progress_bar + 1
