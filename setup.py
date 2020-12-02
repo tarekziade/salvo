@@ -3,7 +3,7 @@ from salvo import __version__
 
 
 install_requires = ["molotov"]
-description = "Apache Bench replacement"
+description = ""
 
 for file_ in ("README", "CHANGES", "CONTRIBUTORS"):
     with open("%s.rst" % file_) as f:
