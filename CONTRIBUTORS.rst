@@ -1,9 +1,9 @@
 Owner and creator
 =================
 
-- Tarek Ziade
+- Tarek Ziadé <tarek@ziade.org>
 
 Contributors
 ============
 
-- XXX
+- You ? :)
