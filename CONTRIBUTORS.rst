@@ -1,7 +1,7 @@
 Owner and creator
 =================
 
-- Tarek Ziadé <tarek@ziade.org>
+- Tarek Ziade <tarek@ziade.org>
 
 Contributors
 ============
