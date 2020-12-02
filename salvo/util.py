@@ -2,6 +2,14 @@ import importlib
 import sys
 
 from molotov.util import request
+from aiohttp import ClientResponseError
+
+
+def raise_response_error(resp, status, message):
+    err = ClientResponseError(resp.request_info, tuple())
+    err.message = message
+    err.status = status
+    raise err
 
 
 def get_server_info(url, method, headers):

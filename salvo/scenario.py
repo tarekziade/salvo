@@ -2,6 +2,7 @@ import asyncio
 import time
 import base64
 from collections import namedtuple
+from aiohttp import ClientResponseError
 
 from salvo.util import resolve
 
@@ -22,13 +23,6 @@ async def init_worker(worker_num, args):
     if auth is not None:
         basic = base64.b64encode(auth.encode())
         headers["Authorization"] = "Basic %s" % basic.decode()
-
-    data = molotov.get_var("data")
-    if data and data.startswith("py:"):
-        method = molotov.get_var("method")
-        url = molotov.get_var("url")
-        func = resolve(data.split(":")[1])
-        molotov.set_var("data", func)
 
     return {"headers": headers}
 
@@ -55,14 +49,17 @@ async def http_test(session):
     meth = getattr(session, meth.lower())
     start = time.time()
     try:
-        async with meth(url, **options) as resp:
+        # XXX we should implement raise_for_status globally in
+        # the session in Molotov
+        async with meth(url, raise_for_status=True, **options) as resp:
             if post_hook is not None:
                 resp = await post_hook(resp)
             res.incr(resp.status, time.time() - start)
-    except Exception as exc:
-        res.errors[exc.errno] += 1
-        if exc.errno not in res.errors_desc:
-            res.errors_desc[exc.errno] = exc
+    except ClientResponseError as exc:
+        res.incr(exc.status, time.time() - start)
+        res.errors[exc.status] += 1
+        if exc.message not in res.errors_desc:
+            res.errors_desc[exc.message] = exc
 
 
 def run_test(url, results, salvoargs):
@@ -100,7 +97,11 @@ def run_test(url, results, salvoargs):
     molotov.set_var("results", results)
     molotov.set_var("auth", salvoargs.auth)
     molotov.set_var("content_type", salvoargs.content_type)
-    molotov.set_var("data", salvoargs.data)
+
+    data = salvoargs.data
+    if data and data.startswith("py:"):
+        data = resolve(data.split(":")[1])
+    molotov.set_var("data", data)
 
     if salvoargs.pre_hook is not None:
         molotov.set_var("pre_hook", resolve(salvoargs.pre_hook))

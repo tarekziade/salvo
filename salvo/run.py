@@ -3,8 +3,7 @@ import logging
 import sys
 
 from salvo import __version__
-from salvo.output import print_errors, RunResults
-from salvo.exceptions import RequestException
+from salvo.output import RunResults
 from salvo.util import get_server_info, print_server_info
 
 
@@ -127,8 +126,8 @@ def main():
             "a request is done for example: "
             "eg. post_hook(response). "
             "It must return a given response parameter or "
-            "raise an `RequestException` for "
-            "failed request."
+            "call `salvo.util.raise_response_error` for "
+            "a failed request."
         ),
         type=str,
         default=None,
@@ -198,13 +197,8 @@ def main():
 
     args.headers = headers
 
-    try:
-        res, molotov_res = load(args.url, args)
-        if molotov_res["SETUP_FAILED"] > 0 or molotov_res["SESSION_SETUP_FAILED"] > 0:
-            sys.exit(1)
-
-    except RequestException as e:
-        print_errors((e,))
+    res, molotov_res = load(args.url, args)
+    if molotov_res["SETUP_FAILED"] > 0 or molotov_res["SESSION_SETUP_FAILED"] > 0:
         sys.exit(1)
 
     if not args.json_output:

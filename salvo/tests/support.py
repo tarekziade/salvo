@@ -43,10 +43,19 @@ def _run(port):
 
 
 class RequestHandler(http.server.SimpleHTTPRequestHandler):
+    def do_HEAD(self):
+        self.send_response(200)
+        self.end_headers()
+
     def do_GET(self):
         if self.path == "/redirect":
             self.send_response(302)
             self.send_header("Location", "/")
+            self.end_headers()
+            return
+
+        if self.path == "/error":
+            self.send_response(500)
             self.end_headers()
             return
 

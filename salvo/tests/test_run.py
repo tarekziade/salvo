@@ -3,6 +3,7 @@ import sys
 import io
 import pytest
 
+from salvo.util import raise_response_error
 from salvo.run import main
 from salvo.tests.support import coserver, dedicatedloop
 from salvo import __version__
@@ -36,6 +37,10 @@ def assert_stdout(expected, *args):
     assert _test(*args)[1] == expected
 
 
+def get_salvo_res(*args):
+    return _test(*args)[-2]
+
+
 def get_molotov_res(*args):
     return _test(*args)[-1]
 
@@ -56,6 +61,10 @@ def test_malformed_header():
     assert_code(1, "--header", "blah", "http://localhost:8888")
 
 
+def test_header():
+    assert_code(0, "--header", "blah:foo", "http://localhost:8888")
+
+
 def test_quiet_and_verbose():
     assert_code(1, "--quiet", "--verbose", "http://localhost:8888")
 
@@ -63,6 +72,21 @@ def test_quiet_and_verbose():
 def test_single_hit_main():
     res = get_molotov_res("http://localhost:8888", "-n", "2")
     assert res["OK"] == 2, res
+
+
+def test_duration():
+    res = get_molotov_res("http://localhost:8888", "-d", "1")
+    assert res["OK"] > 1, res
+
+
+def test_errors():
+    res = get_salvo_res("http://localhost:8888/error", "-n", "2")
+    assert len(res.status_code_counter[500]) == 2, res
+
+
+def test_errors_json():
+    res = get_salvo_res("http://localhost:8888/error", "-n", "2", "--json")
+    assert len(res.status_code_counter[500]) == 2, res
 
 
 _CALLS = []
@@ -94,6 +118,23 @@ def test_hooks():
     ]
     get_molotov_res(*testargs)
     assert len(_CALLS) == 20
+
+
+async def post_hook_raise(resp):
+    raise_response_error(resp, 500, "BAM")
+
+
+def test_post_hook_raise():
+
+    testargs = [
+        "http://localhost:8888",
+        "-n",
+        "1",
+        "--post-hook",
+        "salvo.tests.test_run.post_hook_raise",
+    ]
+    res = get_salvo_res(*testargs)
+    assert len(res.status_code_counter[500]) == 1, res
 
 
 async def hook_fail(*args):
@@ -144,6 +185,19 @@ def test_data_callable():
         "POST",
         "-D",
         "py:salvo.tests.test_run.get_data",
+        "-n",
+        "2",
+    )
+    assert res["OK"] == 2, res
+
+
+def test_data_not_callable():
+    res = get_molotov_res(
+        "http://localhost:8888",
+        "-m",
+        "POST",
+        "-D",
+        "DATA",
         "-n",
         "2",
     )
